@@ -1,6 +1,8 @@
 # Rust toolchain for loongarch64
 
-⚠️ The repo is especially prepared for the [Arceos](https://github.com/aoooos/arceos.git) project.
+⚠️ The repo is especially prepared for the [Arceos](https://github.com/aoooos/arceos.git) project.⚠️
+
+All tested only on Debian-based systems.
 
 The default `config.toml` file provided in the repo builds the Rust toolchain for the target      
 `x86_64-unknown-linux-gnu`, `x86_64-unknown-none`, `riscv64gc-unknown-none-elf`, `riscv64gc-unknown-linux-gnu`,`aarch64-unknown-none-softfloat`, `aarch64-unknown-linux-gnu`, `loongarch64-unknown-none-softfloat`, `loongarch64-unknown-none`, `loongarch64-unknown-linux-gnu`.
