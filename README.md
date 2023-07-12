@@ -12,6 +12,6 @@ The default `config.toml` file provided in the repo builds the Rust toolchain fo
 2. Run `sudo sh sccache.sh` to install sccache, which will accelerate the compiling procedure.
 3. Run `sh add-loongarch64-unknown-linux-gnu.sh` to install loongarch64-unknown-linux-gnu toolchain.
 4. Run `sh add-riscv64-unknown-elf.sh` to install add-riscv64-unknown-elf toolchain.
-5. Run `sh build-toolchain.sh` to build and install rust toolchain.
+5. Run `sh build-toolchain.sh` to download rust source code, and then build & install rust toolchain.
 
 After that, you can find your toolchain at `~/.rustup/toolchains/dev`, which should be added to the environment $PATH.
