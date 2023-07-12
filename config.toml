@@ -1,0 +1,359 @@
+# Use different pre-set defaults than the global defaults.
+#
+# See `src/bootstrap/defaults` for more information.
+# Note that this has no default value (x.py uses the defaults in `config.example.toml`).
+profile = 'user'
+
+# Keeps track of the last version of `x.py` used.
+# If `changelog-seen` does not match the version that is currently running,
+# `x.py` will prompt you to update it and to read the changelog.
+# See `src/bootstrap/CHANGELOG.md` for more information.
+changelog-seen = 2
+
+[llvm]
+ccache = 'sccache'
+
+[build]
+
+# Which triples to build libraries (core/alloc/std/test/proc_macro) for. Each of these triples will
+# be bootstrapped from the build triple themselves. In other words, this is the list of triples for
+# which to build a library that can CROSS-COMPILE to that triple.
+#
+# Defaults to `host`. If you set this explicitly, you likely want to add all
+# host triples to this list as well in order for those host toolchains to be
+# able to compile programs for their native target.
+target = ['x86_64-unknown-linux-gnu', 'x86_64-unknown-none', 'riscv64gc-unknown-none-elf', 'riscv64gc-unknown-linux-gnu','aarch64-unknown-none-softfloat', 'aarch64-unknown-linux-gnu', 'loongarch64-unknown-none-softfloat', 'loongarch64-unknown-none','loongarch64-unknown-linux-gnu']
+
+# Whether to build documentation by default. If false, rustdoc and
+# friends will still be compiled but they will not be used to generate any
+# documentation.
+#
+# You can still build documentation when this is disabled by explicitly passing paths,
+# e.g. `x doc library`.
+docs = false
+cargo-native-static = true
+#vendor = true
+# Arguments passed to the `./configure` script, used during distcheck. You
+# probably won't fill this in but rather it's filled in by the `./configure`
+# script. Useful for debugging.
+configure-args = ['--target=x86_64-unknown-linux-gnu,x86_64-unknown-none,riscv64gc-unknown-none-elf,riscv64gc-unknown-linux-gnu,aarch64-unknown-none-softfloat,aarch64-unknown-linux-gnu,loongarch64-unknown-none,loongarch64-unknown-linux-gnu,loongarch64-unknown-none-softfloat', '--prefix=~/.rustup/toolchains/dev', '--disable-docs']
+
+[install]
+
+# Where to install the generated toolchain. Must be an absolute path.
+prefix = '~/.rustup/toolchains/dev'
+
+[rust]
+lld=true
+
+[target.x86_64-unknown-linux-gnu]
+
+[target.x86_64-unknown-none]
+
+[target.riscv64gc-unknown-none-elf]
+
+[target.riscv64gc-unknown-linux-gnu]
+
+[target.aarch64-unknown-none-softfloat]
+
+[target.aarch64-unknown-linux-gnu]
+
+[target.loongarch64-unknown-linux-gnu]
+
+# C compiler to be used to compile C code. Note that the
+# default value is platform specific, and if not specified it may also depend on
+# what platform is crossing to what platform.
+# See `src/bootstrap/cc_detect.rs` for details.
+cc = "loongarch64-unknown-linux-gnu-gcc"
+
+# C++ compiler to be used to compile C++ code (e.g. LLVM and our LLVM shims).
+# This is only used for host targets.
+# See `src/bootstrap/cc_detect.rs` for details.
+cxx = "loongarch64-unknown-linux-gnu-g++"
+
+# Archiver to be used to assemble static libraries compiled from C/C++ code.
+# Note: an absolute path should be used, otherwise LLVM build will break.
+ar = "loongarch64-unknown-linux-gnu-ar"
+
+# Ranlib to be used to assemble static libraries compiled from C/C++ code.
+# Note: an absolute path should be used, otherwise LLVM build will break.
+ranlib = "loongarch64-unknown-linux-gnu-ranlib"
+
+# Linker to be used to bootstrap Rust code. Note that the
+# default value is platform specific, and if not specified it may also depend on
+# what platform is crossing to what platform.
+# Setting this will override the `use-lld` option for Rust code when targeting MSVC.
+linker = "loongarch64-unknown-linux-gnu-gcc"
+
+# Path to the `llvm-config` binary of the installation of a custom LLVM to link
+# against. Note that if this is specified we don't compile LLVM at all for this
+# target.
+#llvm-config = <none> (path)
+
+# Override detection of whether this is a Rust-patched LLVM. This would be used
+# in conjunction with either an llvm-config or build.submodules = false.
+#llvm-has-rust-patches = if llvm-config { false } else { true }
+
+# Normally the build system can find LLVM's FileCheck utility, but if
+# not, you can specify an explicit file name for it.
+#llvm-filecheck = "/path/to/llvm-version/bin/FileCheck"
+
+# Use LLVM libunwind as the implementation for Rust's unwinder.
+# Accepted values are 'in-tree' (formerly true), 'system' or 'no' (formerly false).
+# This option only applies for Linux and Fuchsia targets.
+# On Linux target, if crt-static is not enabled, 'no' means dynamic link to
+# `libgcc_s.so`, 'in-tree' means static link to the in-tree build of llvm libunwind
+# and 'system' means dynamic link to `libunwind.so`. If crt-static is enabled,
+# the behavior is depend on the libc. On musl target, 'no' and 'in-tree' both
+# means static link to the in-tree build of llvm libunwind, and 'system' means
+# static link to `libunwind.a` provided by system. Due to the limitation of glibc,
+# it must link to `libgcc_eh.a` to get a working output, and this option have no effect.
+#llvm-libunwind = 'no' if Linux, 'in-tree' if Fuchsia
+
+# If this target is for Android, this option will be required to specify where
+# the NDK for the target lives. This is used to find the C compiler to link and
+# build native code.
+# See `src/bootstrap/cc_detect.rs` for details.
+#android-ndk = <none> (path)
+
+# Build the sanitizer runtimes for this target.
+# This option will override the same option under [build] section.
+#sanitizers = build.sanitizers (bool)
+
+# Build the profiler runtime for this target(required when compiling with options that depend
+# on this runtime, such as `-C profile-generate` or `-C instrument-coverage`).
+# This option will override the same option under [build] section.
+#profiler = build.profiler (bool)
+
+# Force static or dynamic linkage of the standard library for this target. If
+# this target is a host for rustc, this will also affect the linkage of the
+# compiler itself. This is useful for building rustc on targets that normally
+# only use static libraries. If unset, the target's default linkage is used.
+#crt-static = <platform-specific> (bool)
+
+# The root location of the musl installation directory. The library directory
+# will also need to contain libunwind.a for an unwinding implementation. Note
+# that this option only makes sense for musl targets that produce statically
+# linked binaries.
+#musl-root = build.musl-root (path)
+
+# The full path to the musl libdir.
+#musl-libdir = musl-root/lib
+
+# The root location of the `wasm32-wasi` sysroot. Only used for the
+# `wasm32-wasi` target. If you are building wasm32-wasi target, make sure to
+# create a `[target.wasm32-wasi]` section and move this field there.
+#wasi-root = <none> (path)
+
+# Used in testing for configuring where the QEMU images are located, you
+# probably don't want to use this.
+#qemu-rootfs = <none> (path)
+
+# Skip building the `std` library for this target. Enabled by default for
+# target triples containing `-none`, `nvptx`, `switch`, or `-uefi`.
+#no-std = <platform-specific> (bool)
+
+# =============================================================================
+# Options for specific targets
+#
+# Each of the following options is scoped to the specific target triple in
+# question and is used for determining how to compile each target.
+# =============================================================================
+[target.loongarch64-unknown-none]
+
+# C compiler to be used to compile C code. Note that the
+# default value is platform specific, and if not specified it may also depend on
+# what platform is crossing to what platform.
+# See `src/bootstrap/cc_detect.rs` for details.
+cc = "loongarch64-unknown-linux-gnu-gcc"
+
+# C++ compiler to be used to compile C++ code (e.g. LLVM and our LLVM shims).
+# This is only used for host targets.
+# See `src/bootstrap/cc_detect.rs` for details.
+cxx = "loongarch64-unknown-linux-gnu-g++"
+
+# Archiver to be used to assemble static libraries compiled from C/C++ code.
+# Note: an absolute path should be used, otherwise LLVM build will break.
+ar = "loongarch64-unknown-linux-gnu-ar"
+
+# Ranlib to be used to assemble static libraries compiled from C/C++ code.
+# Note: an absolute path should be used, otherwise LLVM build will break.
+ranlib = "loongarch64-unknown-linux-gnu-ranlib"
+
+# Linker to be used to bootstrap Rust code. Note that the
+# default value is platform specific, and if not specified it may also depend on
+# what platform is crossing to what platform.
+# Setting this will override the `use-lld` option for Rust code when targeting MSVC.
+linker = "loongarch64-unknown-linux-gnu-gcc"
+
+# Path to the `llvm-config` binary of the installation of a custom LLVM to link
+# against. Note that if this is specified we don't compile LLVM at all for this
+# target.
+#llvm-config = <none> (path)
+
+# Override detection of whether this is a Rust-patched LLVM. This would be used
+# in conjunction with either an llvm-config or build.submodules = false.
+#llvm-has-rust-patches = if llvm-config { false } else { true }
+
+# Normally the build system can find LLVM's FileCheck utility, but if
+# not, you can specify an explicit file name for it.
+#llvm-filecheck = "/path/to/llvm-version/bin/FileCheck"
+
+# Use LLVM libunwind as the implementation for Rust's unwinder.
+# Accepted values are 'in-tree' (formerly true), 'system' or 'no' (formerly false).
+# This option only applies for Linux and Fuchsia targets.
+# On Linux target, if crt-static is not enabled, 'no' means dynamic link to
+# `libgcc_s.so`, 'in-tree' means static link to the in-tree build of llvm libunwind
+# and 'system' means dynamic link to `libunwind.so`. If crt-static is enabled,
+# the behavior is depend on the libc. On musl target, 'no' and 'in-tree' both
+# means static link to the in-tree build of llvm libunwind, and 'system' means
+# static link to `libunwind.a` provided by system. Due to the limitation of glibc,
+# it must link to `libgcc_eh.a` to get a working output, and this option have no effect.
+#llvm-libunwind = 'no' if Linux, 'in-tree' if Fuchsia
+
+# If this target is for Android, this option will be required to specify where
+# the NDK for the target lives. This is used to find the C compiler to link and
+# build native code.
+# See `src/bootstrap/cc_detect.rs` for details.
+#android-ndk = <none> (path)
+
+# Build the sanitizer runtimes for this target.
+# This option will override the same option under [build] section.
+#sanitizers = build.sanitizers (bool)
+
+# Build the profiler runtime for this target(required when compiling with options that depend
+# on this runtime, such as `-C profile-generate` or `-C instrument-coverage`).
+# This option will override the same option under [build] section.
+#profiler = build.profiler (bool)
+
+# Force static or dynamic linkage of the standard library for this target. If
+# this target is a host for rustc, this will also affect the linkage of the
+# compiler itself. This is useful for building rustc on targets that normally
+# only use static libraries. If unset, the target's default linkage is used.
+#crt-static = <platform-specific> (bool)
+
+# The root location of the musl installation directory. The library directory
+# will also need to contain libunwind.a for an unwinding implementation. Note
+# that this option only makes sense for musl targets that produce statically
+# linked binaries.
+#musl-root = build.musl-root (path)
+
+# The full path to the musl libdir.
+#musl-libdir = musl-root/lib
+
+# The root location of the `wasm32-wasi` sysroot. Only used for the
+# `wasm32-wasi` target. If you are building wasm32-wasi target, make sure to
+# create a `[target.wasm32-wasi]` section and move this field there.
+#wasi-root = <none> (path)
+
+# Used in testing for configuring where the QEMU images are located, you
+# probably don't want to use this.
+#qemu-rootfs = <none> (path)
+
+# Skip building the `std` library for this target. Enabled by default for
+# target triples containing `-none`, `nvptx`, `switch`, or `-uefi`.
+#no-std = <platform-specific> (bool)
+
+# =============================================================================
+# Options for specific targets
+#
+# Each of the following options is scoped to the specific target triple in
+# question and is used for determining how to compile each target.
+# =============================================================================
+[target.loongarch64-unknown-none-softfloat]
+
+# C compiler to be used to compile C code. Note that the
+# default value is platform specific, and if not specified it may also depend on
+# what platform is crossing to what platform.
+# See `src/bootstrap/cc_detect.rs` for details.
+cc = "loongarch64-unknown-linux-gnu-gcc"
+
+# C++ compiler to be used to compile C++ code (e.g. LLVM and our LLVM shims).
+# This is only used for host targets.
+# See `src/bootstrap/cc_detect.rs` for details.
+cxx = "loongarch64-unknown-linux-gnu-g++"
+
+# Archiver to be used to assemble static libraries compiled from C/C++ code.
+# Note: an absolute path should be used, otherwise LLVM build will break.
+ar = "loongarch64-unknown-linux-gnu-ar"
+
+# Ranlib to be used to assemble static libraries compiled from C/C++ code.
+# Note: an absolute path should be used, otherwise LLVM build will break.
+ranlib = "loongarch64-unknown-linux-gnu-ranlib"
+
+# Linker to be used to bootstrap Rust code. Note that the
+# default value is platform specific, and if not specified it may also depend on
+# what platform is crossing to what platform.
+# Setting this will override the `use-lld` option for Rust code when targeting MSVC.
+linker = "loongarch64-unknown-linux-gnu-gcc"
+
+# Path to the `llvm-config` binary of the installation of a custom LLVM to link
+# against. Note that if this is specified we don't compile LLVM at all for this
+# target.
+#llvm-config = <none> (path)
+
+# Override detection of whether this is a Rust-patched LLVM. This would be used
+# in conjunction with either an llvm-config or build.submodules = false.
+#llvm-has-rust-patches = if llvm-config { false } else { true }
+
+# Normally the build system can find LLVM's FileCheck utility, but if
+# not, you can specify an explicit file name for it.
+#llvm-filecheck = "/path/to/llvm-version/bin/FileCheck"
+
+# Use LLVM libunwind as the implementation for Rust's unwinder.
+# Accepted values are 'in-tree' (formerly true), 'system' or 'no' (formerly false).
+# This option only applies for Linux and Fuchsia targets.
+# On Linux target, if crt-static is not enabled, 'no' means dynamic link to
+# `libgcc_s.so`, 'in-tree' means static link to the in-tree build of llvm libunwind
+# and 'system' means dynamic link to `libunwind.so`. If crt-static is enabled,
+# the behavior is depend on the libc. On musl target, 'no' and 'in-tree' both
+# means static link to the in-tree build of llvm libunwind, and 'system' means
+# static link to `libunwind.a` provided by system. Due to the limitation of glibc,
+# it must link to `libgcc_eh.a` to get a working output, and this option have no effect.
+#llvm-libunwind = 'no' if Linux, 'in-tree' if Fuchsia
+
+# If this target is for Android, this option will be required to specify where
+# the NDK for the target lives. This is used to find the C compiler to link and
+# build native code.
+# See `src/bootstrap/cc_detect.rs` for details.
+#android-ndk = <none> (path)
+
+# Build the sanitizer runtimes for this target.
+# This option will override the same option under [build] section.
+#sanitizers = build.sanitizers (bool)
+
+# Build the profiler runtime for this target(required when compiling with options that depend
+# on this runtime, such as `-C profile-generate` or `-C instrument-coverage`).
+# This option will override the same option under [build] section.
+#profiler = build.profiler (bool)
+
+# Force static or dynamic linkage of the standard library for this target. If
+# this target is a host for rustc, this will also affect the linkage of the
+# compiler itself. This is useful for building rustc on targets that normally
+# only use static libraries. If unset, the target's default linkage is used.
+#crt-static = <platform-specific> (bool)
+
+# The root location of the musl installation directory. The library directory
+# will also need to contain libunwind.a for an unwinding implementation. Note
+# that this option only makes sense for musl targets that produce statically
+# linked binaries.
+#musl-root = build.musl-root (path)
+
+# The full path to the musl libdir.
+#musl-libdir = musl-root/lib
+
+# The root location of the `wasm32-wasi` sysroot. Only used for the
+# `wasm32-wasi` target. If you are building wasm32-wasi target, make sure to
+# create a `[target.wasm32-wasi]` section and move this field there.
+#wasi-root = <none> (path)
+
+# Used in testing for configuring where the QEMU images are located, you
+# probably don't want to use this.
+#qemu-rootfs = <none> (path)
+
+# Skip building the `std` library for this target. Enabled by default for
+# target triples containing `-none`, `nvptx`, `switch`, or `-uefi`.
+#no-std = <platform-specific> (bool)
+[dist]
+
+
