@@ -1,5 +1,5 @@
 wget https://github.com/aoooos/crosstool-ng-loongarch64/releases/latest/download/loongarch64-unknown-linux-gnu-amd64-cross-toolchain.tar.gz
-tar xvf loongarch64-unknown-linux-gnu-amd64-cross-toolchain.tar.gz
+tar xvfp loongarch64-unknown-linux-gnu-amd64-cross-toolchain.tar.gz
 mv loongarch64-unknown-linux-gnu-amd64-cross-toolchain loongarch64-unknown-linux-gnu-toolchain
 cd loongarch64-unknown-linux-gnu-toolchain
 
